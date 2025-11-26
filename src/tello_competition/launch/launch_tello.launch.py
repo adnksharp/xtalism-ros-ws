@@ -1,53 +1,48 @@
-#!/home/xtal/ros2_venv/bin python
+#!/usr/bin/env python
 
 import subprocess
+import sys
 
 from launch import LaunchDescription
-from launch.actions import LogInfo, OpaqueFunction, Shutdown
+from launch.actions import LogInfo, OpaqueFunction, Shutdown, DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
+"""
 # TARGET_SSID = "TELLO-9A0D42"
 # TARGET_SSID = "TELLO-A04B3A"
 # TARGET_SSID = "Totalplay-5G-5970"
-TARGET_SSID = "TELLO-5C8A2D"
+# TARGET_SSID = "TELLO-5C8A2D"
+TARGET_SSID = "TELLO-9932CC"
 # TARGET_SSID = "ConectaUACJ"
 # TARGET_SSID = "MotherBase"
+"""
+
+tellos = [
+    "TELLO-9A0D42", # DARK
+    "TELLO-A04B3A", # BLACK
+    "TELLO-5C8A2D", # WHITE
+    "TELLO-9932CC"  # YELLOW
+]
 
 
 def verificar_ssid(context, *args, **kwargs):
     try:
-        resultado = subprocess.run(
-            ["nmcli", "-t", "-f", "active,ssid", "dev", "wifi"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-        ssids_activos = [
-            linea.split(":")[1]
-            for linea in resultado.stdout.splitlines()
-            if linea.startswith("yes:")
-        ]
+        ssid_actual = subprocess.check_output(["iwgetid", "-r"], text=True).strip()
 
-        if TARGET_SSID in ssids_activos:
-            return []
-        else:
-            return [
-                LogInfo(
-                    msg=f"SSID incorrecto. Se esperaba '{TARGET_SSID}', pero se encontró: {ssids_activos}"
-                ),
-                Shutdown(reason="SSID no válido"),
-            ]
-    except Exception as e:
+        if ssid_actual in tellos:
+            return [LogInfo(msg=f"{ssid_actual} OK\n")]
+        
         return [
-            LogInfo(msg=f"Error verificando SSID: {e}"),
-            Shutdown(reason="Error en verificación"),
+            LogInfo(msg=f"{ssid_actual} UNAUTHORIZED\n"),
+            Shutdown(reason="Drone out of white list")
         ]
-
+    except:
+        return [Shutdown()]
 
 def generate_launch_description() -> LaunchDescription:
-    ld: LaunchDescription = LaunchDescription()
+    ld = LaunchDescription()
 
-    # Check if connected to Tello WiFi network
     ld.add_action(OpaqueFunction(function=verificar_ssid))
 
     tello_driver_node: Node = Node(
