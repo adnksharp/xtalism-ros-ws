@@ -75,7 +75,7 @@ def generate_launch_description():
         output='screen',
         arguments=['-d', LaunchConfiguration('rviz_config')],
     ))
-
+    """
     launch.add_action(ExecuteProcess(
         cmd=['gz', 'sim', '-r', '-v', '4', 'empty.sdf'],
         output='screen'
@@ -116,5 +116,6 @@ def generate_launch_description():
             {'use_sim_time': True},
         ]
     ))
+    """
 
     return launch

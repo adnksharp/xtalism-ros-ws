@@ -28,10 +28,8 @@
 					</mesh>
 				</geometry>
 				<material>
-					<script>
-						<name>Gazebo/DarkGray</name>
-						<uri>file://media/materials/scripts/gazebo.material</uri>
-					</script>
+					<ambient>0.1 0.1 0.1 1</ambient>
+					<diffuse>0.1 0.1 0.1 1</diffuse>
 				</material>
 			</visual>
 			<collision name='base_link_collision'>
@@ -163,10 +161,9 @@
 					</mesh>
 				</geometry>
 				<material>
-					<script>
-						<name>Gazebo/Red</name>
-						<uri>file://media/materials/scripts/gazebo.material</uri>
-					</script>
+					<ambient>1 0 0 1</ambient>
+					<diffuse>1 0 0 1</diffuse>
+					<specular>0.1 0.1 0.1 1</specular>
 				</material>
 			</visual>
 			<collision name='rotor_0_collision'>
@@ -226,10 +223,9 @@
 					</mesh>
 				</geometry>
 				<material>
-					<script>
-						<name>Gazebo/Black</name>
-						<uri>file://media/materials/scripts/gazebo.material</uri>
-					</script>
+					<ambient>1 0 0 1</ambient>
+					<diffuse>1 0 0 1</diffuse>
+					<specular>0.1 0.1 0.1 1</specular>
 				</material>
 			</visual>
 			<collision name='rotor_1_collision'>
@@ -289,10 +285,9 @@
 					</mesh>
 				</geometry>
 				<material>
-					<script>
-						<name>Gazebo/Black</name>
-						<uri>file://media/materials/scripts/gazebo.material</uri>
-					</script>
+					<ambient>1 0 0 1</ambient>
+					<diffuse>1 0 0 1</diffuse>
+					<specular>0.1 0.1 0.1 1</specular>
 				</material>
 			</visual>
 			<collision name='rotor_2_collision'>
@@ -352,10 +347,9 @@
 					</mesh>
 				</geometry>
 				<material>
-					<script>
-						<name>Gazebo/Black</name>
-						<uri>file://media/materials/scripts/gazebo.material</uri>
-					</script>
+					<ambient>1 0 0 1</ambient>
+					<diffuse>1 0 0 1</diffuse>
+					<specular>0.1 0.1 0.1 1</specular>
 				</material>
 			</visual>
 			<collision name='rotor_3_collision'>
@@ -394,118 +388,119 @@
 			</axis>
 		</joint>
 		<plugin
-			filename="gz-sim-multicopter-motor-model-system"
-			name="gz::sim::systems::MulticopterMotorModel">
-			<rotor>
-				<robotNameSpace>tello_revenant</robotNameSpace>
-				<jointName>rotor_0_joint</jointName>
-				<linkName>rotor_0</linkName>
-				<turningDirection>ccw</turningDirection>
-				<timeConstantUp>0.0125</timeConstantUp>
-				<timeConstantDown>0.025</timeConstantDown>
-				<maxRotVelocity>800.0</maxRotVelocity>
-				<motorConstant>8.54858e-06</motorConstant>
-				<momentConstant>0.016</momentConstant>
-				<commandSubTopic>gazebo/command/motor_speed</commandSubTopic>
-				<actuator_number>0</actuator_number>
-				<rotorDragCoefficient>8.06428e-05</rotorDragCoefficient>
-				<rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
-				<motorSpeedPubTopic>motor_speed/0</motorSpeedPubTopic>
-				<rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
-				<motorType>velocity</motorType>
-			</rotor>
-			<rotor>
-				<robotNameSpace>tello_revenant</robotNameSpace>
-				<jointName>rotor_1_joint</jointName>
-				<linkName>rotor_1</linkName>
-				<turningDirection>ccw</turningDirection>
-				<timeConstantUp>0.0125</timeConstantUp>
-				<timeConstantDown>0.025</timeConstantDown>
-				<maxRotVelocity>800.0</maxRotVelocity>
-				<motorConstant>8.54858e-06</motorConstant>
-				<momentConstant>0.016</momentConstant>
-				<commandSubTopic>gazebo/command/motor_speed</commandSubTopic>
-				<actuator_number>1</actuator_number>
-				<rotorDragCoefficient>8.06428e-05</rotorDragCoefficient>
-				<rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
-				<motorSpeedPubTopic>motor_speed/1</motorSpeedPubTopic>
-				<rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
-				<motorType>velocity</motorType>
-			</rotor>
-			<rotor>
-				<robotNameSpace>tello_revenant</robotNameSpace>
-				<jointName>rotor_2_joint</jointName>
-				<linkName>rotor_2</linkName>
-				<turningDirection>cw</turningDirection>
-				<timeConstantUp>0.0125</timeConstantUp>
-				<timeConstantDown>0.025</timeConstantDown>
-				<maxRotVelocity>800.0</maxRotVelocity>
-				<motorConstant>8.54858e-06</motorConstant>
-				<momentConstant>0.016</momentConstant>
-				<commandSubTopic>gazebo/command/motor_speed</commandSubTopic>
-				<actuator_number>2</actuator_number>
-				<rotorDragCoefficient>8.06428e-05</rotorDragCoefficient>
-				<rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
-				<motorSpeedPubTopic>motor_speed/2</motorSpeedPubTopic>
-				<rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
-				<motorType>velocity</motorType>
-			</rotor>
-			<rotor>
-				<robotNameSpace>tello_revenant</robotNameSpace>
-				<jointName>rotor_3_joint</jointName>
-				<linkName>rotor_3</linkName>
-				<turningDirection>cw</turningDirection>
-				<timeConstantUp>0.0125</timeConstantUp>
-				<timeConstantDown>0.025</timeConstantDown>
-				<maxRotVelocity>800.0</maxRotVelocity>
-				<motorConstant>8.54858e-06</motorConstant>
-				<momentConstant>0.016</momentConstant>
-				<commandSubTopic>gazebo/command/motor_speed</commandSubTopic>
-				<actuator_number>3</actuator_number>
-				<rotorDragCoefficient>8.06428e-05</rotorDragCoefficient>
-				<rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
-				<motorSpeedPubTopic>motor_speed/3</motorSpeedPubTopic>
-				<rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
-				<motorType>velocity</motorType>
-			</rotor>
-		</plugin>
-		<plugin
-			filename="gz-sim-multicopter-control-system"
-			name="gz::sim::systems::MulticopterVelocityControl">
-			<robotNameSpace>tello_revenant</robotNameSpace>
-			<commandSubTopic>cmd_vel</commandSubTopic>
-			<enableSubTopic>enable</enableSubTopic>
-			<comLinkName>base_link</comLinkName>
-			<velocityGain>2.7 2.7 2.7</velocityGain>
-			<attitudeGain>2 3 0.15</attitudeGain>
-			<angularRateGain>0.4 0.52 0.18</angularRateGain>
-			<maximumLinearAcceleration>2 2 2</maximumLinearAcceleration>
-			<rotorConfiguration>
-				<rotor>
-					<jointName>rotor_0_joint</jointName>
-					<forceConstant>8.54858e-06</forceConstant>
-					<momentConstant>0.016</momentConstant>
-					<direction>1</direction>
-				</rotor>
-				<rotor>
-					<jointName>rotor_1_joint</jointName>
-					<forceConstant>8.54858e-06</forceConstant>
-					<momentConstant>0.016</momentConstant>
-					<direction>1</direction>
-				</rotor>
-				<rotor>
-					<jointName>rotor_2_joint</jointName>
-					<forceConstant>8.54858e-06</forceConstant>
-					<momentConstant>0.016</momentConstant>
-					<direction>-1</direction>
-				</rotor>
-				<rotor>
-					<jointName>rotor_3_joint</jointName>
-					<forceConstant>8.54858e-06</forceConstant>
-					<momentConstant>0.016</momentConstant>
-					<direction>-1</direction>
-				</rotor>
-			</rotorConfiguration>
-		</plugin>
+        filename="ignition-gazebo-multicopter-motor-model-system"
+        name="gz::sim::systems::MulticopterMotorModel">
+        <rotor>
+            <robotNamespace>tello_revenant</robotNamespace>
+            <jointName>rotor_0_joint</jointName>
+            <linkName>rotor_0</linkName>
+            <turningDirection>ccw</turningDirection>
+            <timeConstantUp>0.0125</timeConstantUp>
+            <timeConstantDown>0.025</timeConstantDown>
+            <maxRotVelocity>800.0</maxRotVelocity>
+            <motorConstant>8.54858e-06</motorConstant>
+            <momentConstant>0.016</momentConstant>
+            <commandSubTopic>gazebo/command/motor_speed</commandSubTopic>
+            <actuator_number>0</actuator_number>
+            <rotorDragCoefficient>8.06428e-05</rotorDragCoefficient>
+            <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+            <motorSpeedPubTopic>motor_speed/0</motorSpeedPubTopic>
+            <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+            <motorType>velocity</motorType>
+        </rotor>
+        <rotor>
+            <robotNamespace>tello_revenant</robotNamespace>
+            <jointName>rotor_1_joint</jointName>
+            <linkName>rotor_1</linkName>
+            <turningDirection>ccw</turningDirection>
+            <timeConstantUp>0.0125</timeConstantUp>
+            <timeConstantDown>0.025</timeConstantDown>
+            <maxRotVelocity>800.0</maxRotVelocity>
+            <motorConstant>8.54858e-06</motorConstant>
+            <momentConstant>0.016</momentConstant>
+            <commandSubTopic>gazebo/command/motor_speed</commandSubTopic>
+            <actuator_number>1</actuator_number>
+            <rotorDragCoefficient>8.06428e-05</rotorDragCoefficient>
+            <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+            <motorSpeedPubTopic>motor_speed/1</motorSpeedPubTopic>
+            <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+            <motorType>velocity</motorType>
+        </rotor>
+        <rotor>
+            <robotNamespace>tello_revenant</robotNamespace>
+            <jointName>rotor_2_joint</jointName>
+            <linkName>rotor_2</linkName>
+            <turningDirection>cw</turningDirection>
+            <timeConstantUp>0.0125</timeConstantUp>
+            <timeConstantDown>0.025</timeConstantDown>
+            <maxRotVelocity>800.0</maxRotVelocity>
+            <motorConstant>8.54858e-06</motorConstant>
+            <momentConstant>0.016</momentConstant>
+            <commandSubTopic>gazebo/command/motor_speed</commandSubTopic>
+            <actuator_number>2</actuator_number>
+            <rotorDragCoefficient>8.06428e-05</rotorDragCoefficient>
+            <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+            <motorSpeedPubTopic>motor_speed/2</motorSpeedPubTopic>
+            <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+            <motorType>velocity</motorType>
+        </rotor>
+        <rotor>
+            <robotNamespace>tello_revenant</robotNamespace>
+            <jointName>rotor_3_joint</jointName>
+            <linkName>rotor_3</linkName>
+            <turningDirection>cw</turningDirection>
+            <timeConstantUp>0.0125</timeConstantUp>
+            <timeConstantDown>0.025</timeConstantDown>
+            <maxRotVelocity>800.0</maxRotVelocity>
+            <motorConstant>8.54858e-06</motorConstant>
+            <momentConstant>0.016</momentConstant>
+            <commandSubTopic>gazebo/command/motor_speed</commandSubTopic>
+            <actuator_number>3</actuator_number>
+            <rotorDragCoefficient>8.06428e-05</rotorDragCoefficient>
+            <rollingMomentCoefficient>1e-06</rollingMomentCoefficient>
+            <motorSpeedPubTopic>motor_speed/3</motorSpeedPubTopic>
+            <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+            <motorType>velocity</motorType>
+        </rotor>
+    </plugin>
+
+    <plugin
+        filename="gz-sim-multicopter-control-system"
+        name="gz::sim::systems::MulticopterVelocityControl">
+        <robotNamespace>tello_revenant</robotNamespace>
+        <commandSubTopic>cmd_vel</commandSubTopic>
+        <enableSubTopic>enable</enableSubTopic>
+        <comLinkName>base_link</comLinkName>
+        <velocityGain>2.7 2.7 2.7</velocityGain>
+        <attitudeGain>2 3 0.15</attitudeGain>
+        <angularRateGain>0.4 0.52 0.18</angularRateGain>
+        <maximumLinearAcceleration>2 2 2</maximumLinearAcceleration>
+        <rotorConfiguration>
+            <rotor>
+                <jointName>rotor_0_joint</jointName>
+                <forceConstant>8.54858e-06</forceConstant>
+                <momentConstant>0.016</momentConstant>
+                <direction>1</direction>
+            </rotor>
+            <rotor>
+                <jointName>rotor_1_joint</jointName>
+                <forceConstant>8.54858e-06</forceConstant>
+                <momentConstant>0.016</momentConstant>
+                <direction>1</direction>
+            </rotor>
+            <rotor>
+                <jointName>rotor_2_joint</jointName>
+                <forceConstant>8.54858e-06</forceConstant>
+                <momentConstant>0.016</momentConstant>
+                <direction>-1</direction>
+            </rotor>
+            <rotor>
+                <jointName>rotor_3_joint</jointName>
+                <forceConstant>8.54858e-06</forceConstant>
+                <momentConstant>0.016</momentConstant>
+                <direction>-1</direction>
+            </rotor>
+        </rotorConfiguration>
+    </plugin>
 	</model>
 </sdf>
