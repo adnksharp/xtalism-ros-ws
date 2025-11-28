@@ -9,8 +9,14 @@ from rclpy.executors import MultiThreadedExecutor
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Image, BatteryState, Temperature 
 from tello_msg.msg import TelloStatus
+from std_msgs.msg import String, Empty
+from geometry_msgs.msg import Twist
 
 PROJECT_TOPIC = '/gui/cmd'
+
+DEFAULT_SPEED = 30.0
+LOW_SPEED = 10.0
+BOOST_SPEED = 70.0
 
 class RosSignals(QObject):
     odom_signal = Signal(dict)
@@ -23,9 +29,6 @@ class RosSignals(QObject):
 class RosNode(Node):
     def __init__(self, topic=PROJECT_TOPIC, gui_callback=None): 
         super().__init__('gui_node')
-        self.apublisher = self.create_publisher(String, topic, 10)
-        self.gui_callback = gui_callback
-        
         self.odom_sub = self.create_subscription(
             Odometry,
             'odom',
@@ -60,15 +63,76 @@ class RosNode(Node):
             self.status_callback,
             10
         )
+
+        #self.apublisher = self.create_publisher(String, topic, 10)
+        self.cmd_publisher = self.create_publisher(String, topic, 10)
+        self.twist_publisher = self.create_publisher(Twist, 'control', 1)
+        self.takeoff_publisher = self.create_publisher(Empty, 'takeoff', 1)
+        self.land_publisher = self.create_publisher(Empty, 'land', 1)
+        self.gui_callback = gui_callback
         
         self.get_logger().info('initialized.')
 
+        self.tello_state = 'LAND'
 
     def publish(self, key):
-        msg = String()
-        msg.data = key
-        self.apublisher.publish(msg)
-        self.get_logger().info(f'GUI PUB -> {msg.data}')
+        SLOW_SPEED = 5.0  # Para CTRL + key
+        NORMAL_SPEED = 10.0 
+        FAST_SPEED = 15.0 # Para ALT + key
+    
+        twist_msg = Twist()
+        publish_twist = False
+
+        if key.startswith('KEY_'):
+            parts = key.split('_')
+            mod = parts[1] if len(parts) == 3 else ''
+            key_char = parts[-1]
+        
+            speed = NORMAL_SPEED
+            if mod == 'CTRL':
+                speed = SLOW_SPEED
+            elif mod == 'ALT':
+                speed = FAST_SPEED
+
+            if key_char == 'W': twist_msg.linear.y = speed
+            elif key_char == 'S': twist_msg.linear.y = -speed
+            elif key_char == 'A': twist_msg.linear.x = -speed
+            elif key_char == 'D': twist_msg.linear.x = speed
+            elif key_char == 'Q': twist_msg.angular.z = speed
+            elif key_char == 'E': twist_msg.angular.z = -speed
+        
+            publish_twist = True
+
+        elif key.startswith('GYRO_'):
+            delta = int(key.split('_')[1])
+            twist_msg.angular.z = delta * 2.0
+            publish_twist = True
+
+        elif key.startswith('SCROLL_'):
+            parts = key.split('_')
+
+            mod = parts[1] if len(parts) == 3 else ''
+            speed = NORMAL_SPEED
+            if mod == 'CTRL':
+                speed = SLOW_SPEED
+
+            delta = int(parts[-1])
+            twist_msg.linear.z = delta * speed
+            publish_twist = True
+
+        elif key == 'MOUSE_2':
+            if self.tello_state == 'FLYING':
+                self.tello_state = 'LAND'
+                self.land_publisher.publish(Empty())
+                self.get_logger().info('PUB -> Land')
+            else:
+                self.tello_state = 'FLYING'
+                self.takeoff_publisher.publish(Empty())
+                self.get_logger().info('PUB -> Takeoff')
+        
+        if publish_twist:
+            self.twist_publisher.publish(twist_msg)
+            self.get_logger().info(f'PUB Twist -> Vx:{twist_msg.linear.x}, Vy:{twist_msg.linear.y}, Oz:{twist_msg.linear.z} Oz:{twist_msg.angular.z}')
 
     def odom_callback(self, msg: Odometry):
         if self.gui_callback:

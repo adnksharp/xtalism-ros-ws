@@ -184,35 +184,35 @@ class MainWindow(QWidget):
     def keyPressEvent(self, event):
         keyMAP = {
             Qt.Key_W: 'W',
-            Qt.Key_A: 'A',
             Qt.Key_S: 'S',
+            Qt.Key_A: 'A',
             Qt.Key_D: 'D',
+            Qt.Key_Q: 'Q', 
+            Qt.Key_E: 'E',
         }
-        keyCode = event.key()
 
+        keyCode = event.key()
         if keyCode in keyMAP:
             key = keyMAP[keyCode]
             modifiers = event.modifiers()
-
             mod = ''
             if modifiers & Qt.ControlModifier:
                 mod = 'CTRL'
-            if modifiers & Qt.AltModifier:
+            elif modifiers & Qt.AltModifier:
                 mod = 'ALT'
-
-            if mod:
-                msg = f'KEY_{mod}_{key}'
-            else:
-                msg = f'KEY_{key}'
-
+            msg = f'KEY_{mod}_{key}' if mod else f'KEY_{key}'
             self.keyPressed.emit(msg)
 
         super().keyPressEvent(event)
 
     def wheelEvent(self, event):
+        modifiers = event.modifiers()
+        mod = ''
+        if modifiers & Qt.ControlModifier:
+            mod = 'CTRL'
         delta = int(event.angleDelta().y() / 120)
         if delta != 0:
-            msg = f'SCROLL_{delta}'
+            msg = f'SCROLL_{mod}_{delta}' if mod else f'SCROLL_{delta}'
             self.mouseScrolled.emit(msg)
 
     def mousePressEvent(self, event):
@@ -227,9 +227,9 @@ class MainWindow(QWidget):
         super().mouseMoveEvent(event)
 
     def sendPos(self, event):
-        pos = event.position()
-        center = self.width() / 2
-        delta = int(pos.x() - center) // 4
+        pos_x = event.position().x()
+        center_x = self.width() / 2
+        delta = int(pos_x - center_x) // 10
 
         if delta != 0:
             msg = f'GYRO_{delta}'
