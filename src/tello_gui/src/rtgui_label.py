@@ -1,12 +1,12 @@
 from os.path import join as joinOS
-from PySide6.QtWidgets import QPushButton
+from PySide6.QtWidgets import QPushButton, QSizePolicy
 from PySide6.QtGui import QPainter, QColor, QFontDatabase, QFont, QPolygon
 from PySide6.QtCore import Qt, QTimer, QPoint
 
 from ament_index_python.packages import get_package_share_directory
 
 class RTLabel(QPushButton):
-    def __init__(self, text, accent, fsize, parent=None):
+    def __init__(self, text, accent, fsize, parent=None, zstatic=None):
         super().__init__("", parent)
 
         self.colors = {
@@ -30,7 +30,10 @@ class RTLabel(QPushButton):
 
         self.setStyleSheet("background: transparent; border: none;")
         #self.setMinimumSize(30, fsize * 1.5)
-        self.setFixedWidth(len(text) * (fsize - 2))
+        if not zstatic:
+            self.setFixedWidth(len(text) * (fsize - 2))
+        else:
+            self.setFixedWidth(200)
 
     def setText(self, text):
         self.text = text

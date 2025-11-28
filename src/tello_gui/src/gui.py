@@ -12,17 +12,23 @@ import cv2
 from os.path import join as joinOS
 
 from ament_index_python.packages import get_package_share_directory
-from rtros import RosNode, RosThread
+from rtros import RosThread
+
+from cv_bridge import CvBridge 
+from sensor_msgs.msg import Image
 
 class MainWindow(QWidget):
     keyPressed = Signal(str)
     mouseMoved = Signal(str)
     mouseScrolled = Signal(str)
+
     def __init__(self, title):
         super().__init__()
         self.setWindowTitle(title)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window)
         self.setAttribute(Qt.WA_TranslucentBackground)
+
+        self.bridge = CvBridge()
 
         self.exitBTN = RTButton('x', ['bg', 'red'], 'red')
         self.maxBTN = RTButton('▫', ['bg', 'fg'], 'yellow')
@@ -39,51 +45,34 @@ class MainWindow(QWidget):
 
         self.sensorLayout = QVBoxLayout()
 
-        odomLabel = [
-            RTLabel('Posición', 'fg', 12),
-            RTLabel('X: ', 'blue', 10),
-            RTLabel('Y: ', 'blue', 10),
-            RTLabel('Z: ', 'blue', 10),
-            RTLabel('Orientación', 'fg', 12),
-            RTLabel('X: ', 'blue', 10),
-            RTLabel('Y: ', 'blue', 10),
-            RTLabel('Z: ', 'blue', 10),
-            RTLabel('W: ', 'blue', 10)
-        ]
+        odomLabel = RTLabel('Odometria', 'fg', 12)
         sensorLabel = [
             RTLabel('Batería', 'fg', 12),
             RTLabel('Cámara', 'fg', 12),
-            RTLabel('Estado', 'fg', 12),
             RTLabel('Temperatura', 'fg', 12),
-            RTLabel('WiFi', 'fg', 12)
+            RTLabel('Vuelo', 'fg', 12)
         ]
         self.odomValues = [
-            RTLabel(' ', 'fg', 10),
-            RTLabel('0.0', 'teal', 10), 
-            RTLabel('0.0', 'teal', 10), 
-            RTLabel('0.0', 'teal', 10),
-            RTLabel(' ', 'fg', 10),
-            RTLabel('0.0', 'teal', 10), 
-            RTLabel('0.0', 'teal', 10), 
-            RTLabel('0.0', 'teal', 10),
-            RTLabel('0.0', 'teal', 10)
+            RTLabel('0.0', 'teal', 10, zstatic = True), 
+            RTLabel('0.0', 'teal', 10, zstatic = True), 
+            RTLabel('0.0', 'teal', 10, zstatic = True),
+            RTLabel('0.0', 'teal', 10, zstatic = True), 
+            RTLabel('0.0', 'teal', 10, zstatic = True), 
+            RTLabel('0.0', 'teal', 10, zstatic = True),
+            RTLabel('0.0', 'teal', 10, zstatic = True)
         ]
         self.sensorValues = [
-            RTLabel('0% [0.0V]', 'teal', 10),
-            RTLabel('0x0 [0 fps]', 'teal', 10),
-            RTLabel('Null', 'teal', 10),
-            RTLabel('0.0°C [0.0°F]', 'teal', 10),
-            RTLabel('0%', 'teal', 10)
+            RTLabel('0% [0.0V]', 'teal', 10, zstatic = True),
+            RTLabel('0x0', 'teal', 10, zstatic = True),
+            RTLabel('0.0°C [0.0°F]', 'teal', 10, zstatic = True),
+            RTLabel('0 ms', 'teal', 10, zstatic = True)
         ]
 
-        for i in range(9):
-            imuLayout = QHBoxLayout()
-            imuLayout.addWidget(odomLabel[i])
-            imuLayout.addWidget(self.odomValues[i])
-            imuLayout.addStretch()
-            self.sensorLayout.addLayout(imuLayout)
+        self.sensorLayout.addWidget(odomLabel)
+        for i in range(7):
+            self.sensorLayout.addWidget(self.odomValues[i])
         
-        for i in range(5):
+        for i in range(4):
             sensorLayout = QHBoxLayout()
             sensorLayout.addWidget(sensorLabel[i])
             sensorLayout.addStretch()
@@ -143,7 +132,7 @@ class MainWindow(QWidget):
         infoLayout.addLayout(self.infoLBL4)
 
         self.videoFrame = VideoFrame()
-        self.videoFrame.setPixmap(QPixmap(1280, 720))
+        self.videoFrame.setPixmap(QPixmap(960, 720))
         self.videoFrame.pixmap().fill(QColor(0, 0, 0, 255))
 
 
@@ -186,6 +175,12 @@ class MainWindow(QWidget):
         self.mouseMoved.connect(self.ros.node.publish)
         self.mouseScrolled.connect(self.ros.node.publish)
 
+        self.ros.signals.odom_signal.connect(self.update_odom_labels)
+        self.ros.signals.battery_signal.connect(self.update_battery_label) 
+        self.ros.signals.temperature_signal.connect(self.update_temp_label)
+        self.ros.signals.status_signal.connect(self.update_extra_status_labels)
+        self.ros.signals.image_signal.connect(self.update_video_frame)
+
     def keyPressEvent(self, event):
         keyMAP = {
             Qt.Key_W: 'W',
@@ -216,7 +211,6 @@ class MainWindow(QWidget):
 
     def wheelEvent(self, event):
         delta = int(event.angleDelta().y() / 120)
-
         if delta != 0:
             msg = f'SCROLL_{delta}'
             self.mouseScrolled.emit(msg)
@@ -261,6 +255,43 @@ class MainWindow(QWidget):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.overlay.resize(self.size())
+
+    @Slot(dict)
+    def update_odom_labels(self, data: dict):
+        self.odomValues[0].setText(f'PX: {data["px"]:.2f}')
+        self.odomValues[1].setText(f'PY: {data["py"]:.2f}')
+        self.odomValues[2].setText(f'PZ: {data["pz"]:.2f}')
+        self.odomValues[3].setText(f'OX: {data["ox"]:.2f}')
+        self.odomValues[4].setText(f'OY: {data["oy"]:.2f}')
+        self.odomValues[5].setText(f'OZ: {data["oz"]:.2f}')
+        self.odomValues[6].setText(f'OW: {data["ow"]:.2f}')
+
+    @Slot(dict)
+    def update_battery_label(self, data: dict):
+        battery_text = f'{data["percentage"]:.0f}% [{data["voltage"]:.2f}V]'
+        self.sensorValues[0].setText(battery_text)
+
+    @Slot(dict)
+    def update_temp_label(self, data: dict):
+        temp_c = data.get("temperature", float('nan'))
+        temp_f = (temp_c * 9/5) + 32
+        self.sensorValues[2].setText(f'{temp_c:.1f}°C [{temp_f:.1f}°F]')
+
+    @Slot(dict)
+    def update_extra_status_labels(self, data: dict):
+        times = data.get("flight_time", 'N/A')
+        self.sensorValues[3].setText(f'{times} ms')
+
+    @Slot(Image)
+    def update_video_frame(self, msg: Image):
+        try:
+            cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
+            rgb_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+            self.videoFrame.updateImage(rgb_image)
+            self.sensorValues[1].setText(f'{rgb_image.shape[1]}x{rgb_image.shape[0]} px')
+
+        except Exception as e:
+            pass
 
     def closeEvent(self, event):
         RosThread.stop(self.ros)
