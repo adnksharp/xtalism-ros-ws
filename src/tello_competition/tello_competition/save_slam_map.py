@@ -15,7 +15,7 @@ class MapSaver(Node):
         super().__init__('map_saver')
         
         # Parameters
-        self.declare_parameter('save_directory', os.path.expanduser('/home/xtal/ros2_ws/slam_maps/tello_maps'))
+        self.declare_parameter('save_directory', os.path.expanduser('/home/akey/ros2_ws/slam_maps/tello_maps'))
         self.declare_parameter('auto_save_interval', 30.0)  # seconds
         self.declare_parameter('min_points', 100)
         

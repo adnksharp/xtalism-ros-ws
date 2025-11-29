@@ -17,7 +17,7 @@ def main():
     )
 
     ext = "*.png"
-    images = glob.glob(f"/home/xtal/ros2_ws/pictures/calibration/dji_tello/{ext}")
+    images = glob.glob(f"/home/akey/ros2_ws/pictures/calibration/dji_tello/{ext}")
     if not images:
         print("No images found...")
         exit()

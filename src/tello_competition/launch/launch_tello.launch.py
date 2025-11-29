@@ -48,7 +48,6 @@ def generate_launch_description() -> LaunchDescription:
     tello_driver_node: Node = Node(
         package="tello",
         executable="tello",
-        output="screen",
         namespace="/",
         name="tello",
         parameters=[
@@ -63,14 +62,40 @@ def generate_launch_description() -> LaunchDescription:
     ld.add_action(tello_driver_node)
 
     tello_control_node: Node = Node(
-        package="tello_control",
-        executable="tello_control",
-        output="screen",
+        package="tello_gui",
+        executable="gui.py",
         namespace="/",
         name="control",
         respawn=False,
     )
     ld.add_action(tello_control_node)
+
+    camera_shot_node: Node = Node(
+        package="tello_competition",
+        executable="camera_shot",
+        output="screen",
+        namespace="/",
+        name="camera_capture",
+        respawn=False,
+    )
+    ld.add_action(camera_shot_node)
+    
+    # 2. Nodo para guardar el mapa SLAM (Map Saver)
+    # package: tello_competition, executable: save_slam_map
+    map_saver_node: Node = Node(
+        package="tello_competition",
+        executable="save_slam_map",
+        output="screen",
+        namespace="/",
+        name="map_server",
+        parameters=[
+            {"save_directory": "/home/akey/git/xtalism-ros-ws-slam_maps/tello_maps"},
+            {"auto_save_interval": 30.0},
+            {"min_points": 100}
+        ],
+        respawn=False,
+    )
+    ld.add_action(map_saver_node)
 
     # yasmin_dji_tello: Node = Node(
     #     package="state_machine",
@@ -114,10 +139,8 @@ def generate_launch_description() -> LaunchDescription:
     rviz_node: Node = Node(
         package="rviz2",
         executable="rviz2",
-        output="screen",
         namespace="/",
         name="rviz",
-        arguments=["-d", "/home/xtal/ros2_ws/src/tello_competition/config/tello.rviz"],
         respawn=True,
     )
     ld.add_action(rviz_node)
@@ -125,7 +148,6 @@ def generate_launch_description() -> LaunchDescription:
     imu_filter_node: Node = Node(
         package="imu_filter_madgwick",
         executable="imu_filter_madgwick_node",
-        output="screen",
         namespace="/",
         name="imu_filter",
         parameters=[{"use_mag": False}, {"use_gyro": True}, {"use_accel": True}],
@@ -136,11 +158,10 @@ def generate_launch_description() -> LaunchDescription:
     orb_slam3 = Node(
         package="ros2_orb_slam3",
         executable="tello_slam_cpp",
-        output="screen",
         name="orb_slam3",
         parameters=[
             {"node_name_arg": "orb_slam3"},
-            {"config_name": "dji_tello_slam"},  # Name of your YAML config
+            {"config_name": "dji_tello_slam"},
         ],
     )
     ld.add_action(orb_slam3)

@@ -33,7 +33,7 @@ def main(args=None):
             if key == ord("q"):
                 break
             elif key == ord("s"):
-                filename = f"/home/xtal/ros2_ws/pictures/calibration/dji_tello/{frame_count}.png"
+                filename = f"/home/akey/ros2_ws/pictures/calibration/dji_tello/{frame_count}.png"
                 cv2.imwrite(filename, tello_image.frame)
                 print(f"Frame saved as '{filename}'")
                 frame_count += 1
